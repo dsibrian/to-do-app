@@ -31,7 +31,7 @@ app.get("/service/products/:id", (req, res) =>
 
 //Client side routing fix on page refresh or direct browsing to non-root directory
 app.get("/*", (req, res) =>
-  res.status(404).send("Not found y think")
+  res.status(404).send("In progress")
 );
 
 
