@@ -22,12 +22,11 @@
       "args": [
         "run",
         "deploy",
-        "sample-node-app",
+        "to-do-app",
         "--image",
         "us-central1-docker.pkg.dev/$PROJECT_ID/to-do-app/sample-node-app-image",
         "--region",
-        "us-central1",
-        "--allow-unauthenticated"
+        "us-central1"
       ]
     }
   ],
