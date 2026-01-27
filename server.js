@@ -15,8 +15,12 @@ limitations under the License.
 */
 const express = require("express");
 const path = require("path");
+const fetch = require('node-fetch');
+
+
 const app = express();
 const port = process.env.PORT || 8080;
+
 
 //Load products for pseudo database
 const products = require("./data/products.json").products;
@@ -29,10 +33,30 @@ app.get("/service/products/:id", (req, res) =>
   res.json(products.find((product) => product.id === req.params.id))
 );
 
+app.get("/service/pokemon/ditto", async (req, res) => {
+    try {
+        const response = await fetch("https://pokeapi.co/api/v2/pokemon/ditto");
+        
+        if (!response.ok) {
+            throw new Error(`Error en la API: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        
+        // Devolvemos el JSON completo de Ditto al cliente
+        res.json(data);
+        
+    } catch (error) {
+        console.error("Error al hacer fetch:", error);
+        res.status(500).json({ error: "Hubo un problema obteniendo los datos de Ditto" });
+    }
+});
+
 //Client side routing fix on page refresh or direct browsing to non-root directory
-app.get("/*", (req, res) =>
-  res.status(404).send("In progress")
-);
+app.get("/*", function(req, res) {
+    res.send("Hola")
+});
+
 
 
 //Start the server
