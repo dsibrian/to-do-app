@@ -1,0 +1,86 @@
+body {
+  background: #2852bc;
+  background: radial-gradient(at left top, #2852bc, #02ce85);
+  background-repeat: no-repeat;
+
+}
+
+.search-input {
+  background-color: rgb(222, 242, 255);
+  color: rgb(18, 37, 53);
+  outline: none;
+}
+
+::placeholder {
+  color: rgb(18, 37, 53);
+  opacity: 0.6;
+  font-weight: 500;
+}
+
+.btn-add {
+  position: absolute;
+  background-color: orange !important;
+  color: aliceblue !important;
+  border: none;
+  height: 100%;
+  right: 0;
+}
+
+ul {
+  /* position: relative; */
+  list-style-type: none;
+  font-size: large;
+}
+ul li {
+  font-weight: 500;
+  padding: 10px 10px 10px 40px;
+  line-height: 20px;
+  position: relative;
+}
+
+ul li small {
+    display: block;
+    font-size: 0.7em;
+    color: #666;
+}
+
+ul li::before {
+  content: "";
+  position: absolute;
+  background-image: url("https://cdn-icons-png.flaticon.com/128/10914/10914351.png");
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  top: 5px;
+  left: 0;
+  background-size: cover;
+  background-position: center;
+}
+
+ul li.checked {
+  color: #555;
+  text-decoration: line-through;
+  cursor: pointer;
+  user-select: none;
+}
+ul li.checked::before {
+  background-image: url("https://png.pngtree.com/png-vector/20191113/ourmid/pngtree-green-check-mark-icon-flat-style-png-image_1986021.jpg");
+}
+
+ul span {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 5px;
+  border-radius: 50%;
+  line-height: 12px;
+  text-align: center;
+  color: orange;
+}
+
+ul span:hover {
+  background-color: orange;
+  color: white;
+  cursor: pointer;
+}
