@@ -1,83 +1,105 @@
-const inputBox = document.getElementById('search');
-const taskList = document.getElementById('task-list');
-const inputTime = document.getElementById('task-time');
-
-document.getElementById('enable-notifications').onclick = () => {
-    Notification.requestPermission();
+// 1. CONFIGURACIÓN Y SELECTORES
+const DOM = {
+    inputBox: document.getElementById('search'),
+    taskList: document.getElementById('task-list'),
+    inputTime: document.getElementById('task-time'),
+    btnNotifications: document.getElementById('enable-notifications')
 };
 
-function addTask() {
-    if (inputBox.value === '') {
-        alert("¡Escribe una tarea!");
-        return;
+// 2. MÓDULO DE PERSISTENCIA
+const StorageManager = {
+    save: () => {
+        localStorage.setItem("data", DOM.taskList.innerHTML);
+        //console.log("%c[Storage] Datos guardados en localStorage", "color: #4CAF50; font-weight: bold;");
+    },
+    load: () => {
+        DOM.taskList.innerHTML = localStorage.getItem("data") || "";
+        //console.log("%c[Storage] Datos cargados", "color: #4CAF50; font-weight: bold;");
     }
+};
 
-    let li = document.createElement("li");
-    // Guardamos la hora en un atributo 'data' para leerla luego
-    const timeValue = inputTime.value || "Sin hora";
-    li.setAttribute('data-time', inputTime.value); 
+// 3. MÓDULO DE NOTIFICACIONES
+const NotificationManager = {
+    requestPermission: () => {
+        //console.log("[Notificaciones] Solicitando permiso...");
+        Notification.requestPermission().then(perm => console.log(`[Notificaciones] Permiso: ${perm}`));
+    },
     
-    li.innerHTML = `${inputBox.value} <small class="text-muted">(${timeValue})</small>`;
-    
-    let span = document.createElement("span");
-    span.innerHTML = "\u00d7";
-    li.appendChild(span);
-    
-    taskList.appendChild(li);
-    inputBox.value = "";
-    inputTime.value = "";
-    saveData();
-}
-
-function checkAlarms() {
-    const now = new Date();
-    const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-    
-    const tasks = taskList.getElementsByTagName('li');
-    for (let task of tasks) {
-        const taskTime = task.getAttribute('data-time');
-        const isChecked = task.classList.contains('checked');
-
-        if (taskTime === currentTime && !isChecked) {
-            sendNotification(task.innerText.replace('×', ''));
-            task.classList.add('checked'); // La marcamos para que no suene infinitamente
-            saveData();
+    send: (taskText) => {
+        //console.log(`%c[Alarma] Disparando notificación para: ${taskText}`, "color: #FF5722; font-weight: bold;");
+        if (Notification.permission === "granted") {
+            new Notification("⏰ ¡Alarma!", { body: `Es hora de: ${taskText}` });
+            new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3').play();
         }
-    }
-}
+    },
 
-function sendNotification(taskText) {
-    if (Notification.permission === "granted") {
-        new Notification("⏰ ¡Alarma de Tarea!", {
-            body: `Es hora de: ${taskText}`,
-            icon: "https://cdn-icons-png.flaticon.com/512/8028/8028200.png"
+    checkAlarms: () => {
+        const now = new Date();
+        const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+        
+        const tasks = DOM.taskList.querySelectorAll('li:not(.checked)');
+        tasks.forEach(task => {
+            const taskTime = task.getAttribute('data-time');
+            
+            // Añadimos una bandera temporal para que no suene dos veces en el mismo minuto
+            if (taskTime === currentTime && task.dataset.lastNotified !== currentTime) {
+                NotificationManager.send(task.innerText.replace('×', ''));
+                task.classList.add('checked');
+                task.dataset.lastNotified = currentTime; // Marcamos el minuto exacto del aviso
+                StorageManager.save();
+            }
         });
-        // Opcional: Sonido
-        const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
-        audio.play();
     }
-}
+};
 
-// Revisar cada 1 segundo
-setInterval(checkAlarms, 1000);
+// 4. MÓDULO DE TAREAS
+const TaskManager = {
+    add: () => {
+        //console.log("[Task] Intentando agregar nueva tarea...");
+        const text = DOM.inputBox.value;
+        const time = DOM.inputTime.value;
 
-
-    taskList.addEventListener("click", function (e) {
-        if (e.target.tagName === 'LI') {
-            e.target.classList.toggle('checked');
-            saveData();
-        }else if (e.target.tagName === "SPAN") {
-            e.target.parentElement.remove();
-            saveData();
+        if (text === '') {
+            console.warn("[Task] Intento de agregar tarea vacía");
+            return alert("¡Escribe una tarea!");
         }
-    })
 
-    function saveData() {
-        localStorage.setItem("data", taskList.innerHTML);
+        const li = document.createElement("li");
+        li.setAttribute('data-time', time); 
+        li.innerHTML = `${text} <small class="text-muted">(${time || "Sin hora"})</small><span>\u00d7</span>`;
+        
+        DOM.taskList.appendChild(li);
+        DOM.inputBox.value = "";
+        DOM.inputTime.value = "";
+        
+        /*console.log(`%c[Task] Tarea creada: ${text} a las ${time}`, "color: #2196F3");*/
+        StorageManager.save();
+    },
+
+    handleAction: (e) => {
+        if (e.target.tagName === 'LI') {
+            //console.log("[UI] Click en lista: Alternando estado 'completado'");
+            e.target.classList.toggle('checked');
+        } else if (e.target.tagName === "SPAN") {
+            //console.log("[UI] Click en eliminar: Removiendo elemento");
+            e.target.parentElement.remove();
+        }
+        StorageManager.save();
     }
+};
 
-    function showTask() {
-        taskList.innerHTML = localStorage.getItem("data");
-    }
-
-    showTask();
+// 5. INICIALIZACIÓN
+document.addEventListener('DOMContentLoaded', () => {
+    //console.log("%c--- Aplicación Iniciada ---", "background: #333; color: #fff; padding: 5px;");
+    StorageManager.load();
+    
+    DOM.btnNotifications.onclick = NotificationManager.requestPermission;
+    DOM.taskList.onclick = TaskManager.handleAction;
+    
+    // Verificación de alarmas cada segundo
+    setInterval(() => {
+        // No ponemos log aquí para no saturar la consola cada segundo, 
+        // pero sí lo hará cuando encuentre una alarma.
+        NotificationManager.checkAlarms();
+    }, 1000);
+});
