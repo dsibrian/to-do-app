@@ -1,4 +1,4 @@
-# 📋 To-Do App con Notificaciones
+# 📋 To-Do App con Notificaciones 
 
 Una aplicación de lista de tareas desarrollada con **Node.js** y **Vanilla JavaScript**. Permite gestionar tareas, guardar el progreso localmente y programar alarmas sonoras para recordatorios.
 
