@@ -1,4 +1,18 @@
-Create an application that can be deployed into  app engine, Cloud run or Cloud Functions and store your project files into a Github repository
-Implement required services so once you perform a push to the repository with a code change, a new image is built and stored into artifact registry.
-Use the same build process to then deploy your code to a serverless service.
-Due to security reasons, you require that all builds are performed in private vms with no access to the internet. Implement a solution to meet this requirement. 
+Audifonos
+
+Razer BlackShark V2 Pro	Tela FlowKnit	USB 2.4GHz / BT	320g
+SteelSeries Arctis Nova 7	Tela AirWeave	USB 2.4GHz / BT	325g
+Sennheiser Momentum 4	Cuero Premium	Bluetooth	293g
+
+
+Modo Pasivo (Passive Mode)
+Wired/Wireless Dual Mode
+Audio por USB-C
+
+Keychron K2
+Logitech G915 TKL
+Razer BlackWidow V3 Mini HyperSpeed
+
+Keychron M3
+Razer Basilisk V3 Pro
+Logitech MX Master 3S
